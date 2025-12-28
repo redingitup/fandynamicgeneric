@@ -35,7 +35,7 @@ cp systemd/fandynamic.service /etc/systemd/system/
 nano /etc/fandynamic.conf
 ```
 
-**Edit ONLY these 3 lines:**
+**Edit ONLY these 3 lines and fan curve if desired:**
 ```bash
 IDRAC_IP="192.168.40.120"      # ← Change to YOUR iDRAC IP
 IDRAC_USER="root"              # ← Change to YOUR username (if not "root")
