@@ -18,7 +18,23 @@ Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple t
 
 ---
 
-## ⚠️ QUICK START (3 STEPS)
+## 📖 Table of Contents
+
+- **[⚠️ Quick Start](#quick-start)** - Get running in 3 steps
+- **[📋 Prerequisites](#prerequisites)** - What you need before installing
+- **[⚙️ Configuration](#configuration-file-guide)** - How to configure the daemon
+- **[📊 Monitoring](#monitoring-commands)** - How to watch temps and fans
+- **[🎛️ Management](#manage-daemon)** - Start, stop, restart, view logs
+- **[🔧 Customization](#customize-temperature-curve)** - Adjust temperature thresholds
+- **[🛑 Removal](#complete-removal)** - How to uninstall completely
+- **[📚 Documentation](#how-it-works)** - How it all works
+- **[❓ Troubleshooting](#troubleshooting)** - Common issues and fixes
+- **[📦 Requirements](#requirements)** - System requirements
+- **[📄 License](#license)** - License information
+
+---
+
+## ⚠️ Quick Start
 
 ### Step 1: Clone Repository
 ```bash
@@ -29,7 +45,6 @@ cd fandynamicgeneric
 
 ### Step 2: Edit Configuration BEFORE Installing (⚠️ DO THIS FIRST!)
 ```bash
-# Edit the config file in the repo BEFORE copying to system
 nano fandynamic.conf
 ```
 
@@ -44,45 +59,39 @@ IDRAC_PASS="calvin"            # ← Change to YOUR password (if not "calvin")
 
 ### Step 3: Copy Files & Start Daemon
 ```bash
-# Copy the edited config and other files
 sudo cp fandynamic.conf /etc/
 sudo cp fandynamic-stable.sh /root/
 sudo chmod +x /root/fandynamic-stable.sh
 sudo cp systemd/fandynamic.service /etc/systemd/system/
 
-# Start the daemon
 sudo systemctl daemon-reload
 sudo systemctl enable fandynamic.service
 sudo systemctl start fandynamic.service
 sudo systemctl status fandynamic.service
 ```
 
-**✅ Done!** Fans now at 10% idle (≤45°C). Check logs:
+**✅ Done!** Check logs:
 ```bash
 sudo tail -f /var/log/fandynamic.log
 ```
 
 ---
 
-## Prerequisites
+## 📋 Prerequisites
 
 Before installing, ensure **ipmitool** is installed:
 
 ```bash
 sudo apt-get update
 sudo apt-get install ipmitool
-```
-
-Verify:
-```bash
 which ipmitool
 ```
 
 ---
 
-## Configuration File Guide
+## ⚙️ Configuration File Guide
 
-Edit **`fandynamic.conf`** in the git repo before copying. No script editing needed!
+Edit **`fandynamic.conf`** in the git repo before copying.
 
 | Variable | What It Is | Default | Required? |
 |----------|-----------|---------|-----------|
@@ -98,127 +107,102 @@ Edit **`fandynamic.conf`** in the git repo before copying. No script editing nee
 | **RESTART_ON_AUTO** | Auto-restart on failsafe | `true` | ❌ Optional |
 
 ### Finding Your iDRAC IP
-
 ```bash
-# Method 1: Check your router's DHCP client list
-# Look for "idrac" or "dell" in connected devices
-
-# Method 2: Use ping (if you know the range)
 ping 192.168.40.120
-
-# Method 3: Check Proxmox iDRAC console directly (usually port 443)
-# https://192.168.X.X
+# Or check your router's DHCP client list for "idrac" or "dell"
 ```
 
 ---
 
-## Quick Commands
+## 📊 Monitoring Commands
 
-### Temporary Monitoring (One-Off)
+### Temporary (One-Time Check)
 
-**Check Temperature & Fans Right Now:**
+**Quick single check:**
 ```bash
-# One-liner to check current temps and fan speeds
-source /etc/fandynamic.conf && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep "0Eh\|Board\|Exhaust" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan
+temps
 ```
 
-**Watch Temps & Fans Live (5 second refresh):**
+To enable this, add to your `~/.bashrc`:
 ```bash
-source /etc/fandynamic.conf && watch -n 5 "echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Temperature | grep '0Eh\|Board\|Exhaust' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Fan"
+alias temps='source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -E "Board|Inlet|Exhaust" && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
 ```
 
-**View Daemon Logs in Real-Time:**
+Then reload:
 ```bash
-sudo tail -f /var/log/fandynamic.log
+source ~/.bashrc
 ```
 
----
-
-### Persistent Monitoring (After Install - Optional)
-
-If you want a **persistent monitoring session** that survives SSH disconnects:
-
-**Install tmux first:**
-```bash
-sudo apt-get install tmux
+**Output:**
 ```
+=== TEMPERATURES ===
+Board Temp       | 35°C
+Inlet Temp       | 28°C
+Exhaust Temp     | 42°C
 
-**Create persistent monitoring session:**
-```bash
-tmux new-session -d -s fandynamic-monitor
-tmux send-keys -t fandynamic-monitor "source /etc/fandynamic.conf && watch -n 5 \"echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Temperature | grep '0Eh|Board|Exhaust' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Fan\"" Enter
-```
-
-**Attach to monitoring session anytime:**
-```bash
-tmux attach-session -t fandynamic-monitor
-```
-
-**Detach from session (leave running):**
-```bash
-# Press: Ctrl+B then D
-```
-
-**Kill monitoring session when done:**
-```bash
-tmux kill-session -t fandynamic-monitor
-```
-
----
-
-### Expected Output Examples
-
-**Daemon logs:**
-```
-2025-12-28 13:56:38 - ===== Dell R730XD Fan Control Daemon Started =====
-2025-12-28 13:56:38 - iDRAC IP: 192.168.40.120
-2025-12-28 13:56:38 - Check Interval: 60s
-2025-12-28 13:56:38 - Temperature Curve: 45/50/55°C (failsafe: 60°C)
-2025-12-28 13:57:00 - Board temp: 32°C → Fans: 10% (PWM: 0x0A)
-```
-
-**Fan speeds from ipmitool:**
-```
-Fan1 RPM         | 3000 RPM      | ok
-Fan2 RPM         | 3000 RPM      | ok
-Fan3 RPM         | 3000 RPM      | ok
+=== FAN SPEEDS ===
+Fan1 RPM         | 3000 RPM
+Fan2 RPM         | 3000 RPM
 ...
 ```
 
 ---
 
-## Manage Daemon
+### Persistent (Live Monitoring with Auto-Refresh)
 
-### Check Status
+**Watch temps & fans update every 5 seconds:**
 ```bash
+watch -n 5 'source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -E "Board|Inlet|Exhaust" && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
+```
+
+- **Exit**: `Ctrl+C`
+- **Refreshes every 5 seconds** automatically
+
+Or add to `~/.bashrc` for easier access:
+```bash
+alias tempwatch='watch -n 5 "source /etc/fandynamic.conf && echo \"=== TEMPERATURES ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Temperature 2>/dev/null | grep -E \"Board|Inlet|Exhaust\" && echo \"\" && echo \"=== FAN SPEEDS ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Fan 2>/dev/null | grep \"RPM\""'
+```
+
+Then just type:
+```bash
+tempwatch
+```
+
+---
+
+### Comparison
+
+| Command | Shows | Refreshes? | Exit |
+|---------|-------|-----------|------|
+| `temps` | Board, Inlet, Exhaust, Fans | No (once) | N/A |
+| `tempwatch` | Board, Inlet, Exhaust, Fans | Every 5 sec | `Ctrl+C` |
+
+---
+
+## 🎛️ Manage Daemon
+
+```bash
+# Check status
 sudo systemctl status fandynamic.service
-```
 
-### View Live Logs
-```bash
+# View logs
 sudo tail -f /var/log/fandynamic.log
-```
 
-### Restart Daemon
-```bash
+# Restart daemon
 sudo systemctl restart fandynamic.service
-```
 
-### Stop Daemon (Fans go AUTO)
-```bash
+# Stop daemon (fans go AUTO)
 sudo systemctl stop fandynamic.service
-```
 
-### Start Daemon Again
-```bash
+# Start daemon again
 sudo systemctl start fandynamic.service
 ```
 
 ---
 
-## Customize Temperature Curve
+## 🔧 Customize Temperature Curve
 
-Edit the config file in `/etc/`:
+Edit `/etc/fandynamic.conf`:
 
 ```bash
 sudo nano /etc/fandynamic.conf
@@ -232,10 +216,9 @@ TEMP_HIGH=52     # Jump to 100% earlier
 TEMP_FAILSAFE=58 # Failsafe at lower temp
 ```
 
-**Then restart:**
+Then restart:
 ```bash
 sudo systemctl restart fandynamic.service
-sudo tail -f /var/log/fandynamic.log
 ```
 
 ---
@@ -243,7 +226,6 @@ sudo tail -f /var/log/fandynamic.log
 ## Auto-Restart on Failsafe
 
 When temperature exceeds `TEMP_FAILSAFE`:
-
 1. Daemon returns fans to iDRAC AUTO control
 2. Waits 120 seconds for cooling
 3. Cleanly exits
@@ -267,14 +249,13 @@ Stop the daemon and return fans to iDRAC AUTO mode:
 sudo systemctl stop fandynamic.service
 sudo systemctl disable fandynamic.service
 
-# Return to AUTO
 source /etc/fandynamic.conf
 sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01
 ```
 
 ---
 
-## Complete Removal
+## 🛑 Complete Removal
 
 Remove all daemon files and revert to iDRAC AUTO control permanently:
 
@@ -300,42 +281,26 @@ sudo rm -f /var/log/fandynamic.log
 sudo systemctl daemon-reload
 sudo systemctl reset-failed
 
-# Step 7: Return to iDRAC AUTO mode (use hardcoded values)
+# Step 7: Return to iDRAC AUTO mode
 sudo ipmitool -I lanplus -H "192.168.40.120" -U "root" -P "calvin" raw 0x30 0x30 0x01 0x01
 
 # Step 8: Remove git repository folder
 rm -rf ~/fandynamicgeneric
 
-# Step 9: If you created monitoring session, kill it
-tmux kill-session -t fandynamic-monitor 2>/dev/null || true
-
-# Step 10: Verify complete removal
+# Step 9: Verify removal
 echo "=== Verification ==="
-echo "Config file:"
-ls -la /etc/fandynamic.conf 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
-
-echo "Script file:"
-ls -la /root/fandynamic-stable.sh 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
-
-echo "Service file:"
-ls -la /etc/systemd/system/fandynamic.service 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
-
-echo "Git repo folder:"
-ls -la ~/fandynamicgeneric 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
-
-echo "Systemd status:"
-sudo systemctl status fandynamic.service 2>&1 | grep -q "Unit fandynamic.service could not be found" && echo "✅ Unregistered" || echo "❌ Still registered"
+ls -la /etc/fandynamic.conf 2>&1 | grep -q "No such file" && echo "✅ Config removed" || echo "❌ Config still exists"
+ls -la /root/fandynamic-stable.sh 2>&1 | grep -q "No such file" && echo "✅ Script removed" || echo "❌ Script still exists"
+ls -la ~/fandynamicgeneric 2>&1 | grep -q "No such file" && echo "✅ Git repo removed" || echo "❌ Git repo still exists"
 ```
 
-**✅ Completely removed!** Fans are now back to iDRAC AUTO control.
+**✅ Completely removed!** Fans are back to iDRAC AUTO control.
 
-To **reinstall**, simply start fresh from the top: Clone the repo, edit config, and copy files.
-
-> **Important:** If your iDRAC IP/credentials are different from defaults, edit the ipmitool command in Step 7 before running it.
+> **Note:** If your iDRAC IP/credentials are different from defaults, edit the ipmitool command in Step 7 before running it.
 
 ---
 
-## How It Works
+## 📚 How It Works
 
 1. **Systemd** starts `/root/fandynamic-stable.sh` at boot
 2. **Script reads** `/etc/fandynamic.conf` for all settings
@@ -359,7 +324,7 @@ To **reinstall**, simply start fresh from the top: Clone the repo, edit config, 
 
 ---
 
-## Troubleshooting
+## ❓ Troubleshooting
 
 ### Daemon won't start
 ```bash
@@ -367,30 +332,20 @@ sudo journalctl -u fandynamic -n 50
 ```
 
 ### "fandynamic.conf not found" error
-Make sure you copied the file:
 ```bash
 sudo cp fandynamic.conf /etc/
 ls -la /etc/fandynamic.conf
 ```
 
 ### Can't connect to iDRAC
-Verify your settings:
 ```bash
 source /etc/fandynamic.conf
-echo "IP: $IDRAC_IP | User: $IDRAC_USER | Pass: $IDRAC_PASS"
-
-# Test connection
 sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" chassis status
 ```
 
 ### Fans not changing speed
-Check logs:
 ```bash
 sudo tail -20 /var/log/fandynamic.log
-```
-
-Verify config is correct:
-```bash
 cat /etc/fandynamic.conf | grep -E "IDRAC|TEMP|SENSOR"
 ```
 
@@ -398,7 +353,7 @@ cat /etc/fandynamic.conf | grep -E "IDRAC|TEMP|SENSOR"
 Check if temp is above failsafe:
 ```bash
 source /etc/fandynamic.conf
-sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep "0Eh\|Board"
+sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep "0Eh"
 ```
 
 To disable auto-restart:
@@ -410,7 +365,7 @@ sudo systemctl restart fandynamic.service
 
 ---
 
-## Requirements
+## 📦 Requirements
 
 - **Proxmox host** with SSH access
 - **ipmitool** installed: `sudo apt-get install ipmitool`
@@ -421,18 +376,16 @@ sudo systemctl restart fandynamic.service
 
 ## Files in This Repo
 
-| File | Purpose | Edit Before Copy? |
-|------|---------|------------------|
-| `fandynamic.conf` | Configuration (IPs, temps, settings) | ✅ **YES** |
-| `fandynamic-stable.sh` | Main daemon script | ❌ NO |
-| `systemd/fandynamic.service` | Systemd unit file | ❌ NO |
-| `README.md` | This file | ❌ NO |
+| File | Purpose |
+|------|---------|
+| `fandynamic.conf` | Configuration (edit before copying) |
+| `fandynamic-stable.sh` | Main daemon script |
+| `systemd/fandynamic.service` | Systemd unit file |
+| `README.md` | This file |
 
 ---
 
 ## Reusability for Other R730XD Servers
-
-**✅ YES - Fully reusable!**
 
 For each new server:
 1. Clone the repo
@@ -443,11 +396,11 @@ For each new server:
 
 ## Changelog
 
-- **v1.1** - Fixed sensor `0Eh` parsing with grep -oP pattern; added SENSOR_ID config option; improved error handling
+- **v1.1** - Fixed sensor `0Eh` parsing; added SENSOR_ID config; improved error handling
 - **v1.0** - Initial release
 
 ---
 
-## License
+## 📄 License
 
 Use at your own risk. No warranty provided.
