@@ -1,4 +1,4 @@
-﻿# Fan Dynamic Generic
+# Fan Dynamic Generic
 
 Comprehensive Dell PowerEdge R730xd server management tools for Proxmox VE.
 
@@ -15,12 +15,7 @@ Real-time CPU and HBA330 temperature monitoring with Discord alerts.
 ## Quick Start
 
 ### Option 1: Fan Control Only
+```bash
 git clone https://github.com/redingitup/fandynamicgeneric.git
-cd fandynamicgeneric/temperature-monitoring
+cd fandynamicgeneric/fan-control
 sudo bash install.sh
-
----
-
-## License
-
-MIT License
