@@ -3,6 +3,7 @@
 # Dell PowerEdge R730XD Dynamic Fan Control Daemon
 # Reads configuration from /etc/fandynamic.conf
 # No hardcoded values - fully configurable!
+# Includes auto-restart on failsafe detection
 
 set -e
 
@@ -28,6 +29,7 @@ TEMP_MID=${TEMP_MID:-50}
 TEMP_HIGH=${TEMP_HIGH:-55}
 TEMP_FAILSAFE=${TEMP_FAILSAFE:-60}
 SENSOR_ID=${SENSOR_ID:-0Eh}
+RESTART_ON_AUTO=${RESTART_ON_AUTO:-true}  # Auto-restart on failsafe
 
 # Logging
 LOG_FILE="/var/log/fandynamic.log"
@@ -39,6 +41,7 @@ log "===== Dell R730XD Fan Control Daemon Started ====="
 log "iDRAC IP: $IDRAC_IP"
 log "Check Interval: ${CHECK_INTERVAL}s"
 log "Temperature Curve: $TEMP_LOW/$TEMP_MID/$TEMP_HIGH°C (Failsafe: ${TEMP_FAILSAFE}°C)"
+log "Auto-restart on AUTO: $RESTART_ON_AUTO"
 
 # Initialize
 LAST_PWM=""
@@ -62,6 +65,14 @@ while true; do
         log "FAILSAFE: Board temp $BOARD_TEMP°C >= $TEMP_FAILSAFE°C, returning to AUTO"
         ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01 2>/dev/null
         TARGET_PWM="AUTO"
+        
+        # Auto-restart logic: wait for cooling, then restart
+        if [ "$RESTART_ON_AUTO" = "true" ]; then
+            log "Auto-restart enabled: Waiting 120 seconds for temp to cool before restarting..."
+            sleep 120
+            log "Restarting fan control daemon..."
+            exit 0  # Exit cleanly - systemd will restart it
+        fi
     elif [ "$BOARD_TEMP" -le "$TEMP_LOW" ]; then
         TARGET_PWM="0x0A"  # 10%
     elif [ "$BOARD_TEMP" -le "$TEMP_MID" ]; then
