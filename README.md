@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/24357636/README.9.md)
+[README.md](https://github.com/user-attachments/files/24357638/README-updated.md)
 # Dell PowerEdge R730XD Dynamic Fan Control
 
 Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple temperature → PWM curve.
@@ -231,21 +231,26 @@ Remove all daemon files and revert to iDRAC AUTO control permanently:
 sudo systemctl stop fandynamic.service
 sudo systemctl disable fandynamic.service
 
-# Remove all files
-sudo rm /etc/systemd/system/fandynamic.service
-sudo rm /root/fandynamic-stable.sh
-sudo rm /etc/fandynamic.conf
-sudo rm /var/log/fandynamic.log
+# Remove all files (correct paths)
+sudo rm -f /etc/systemd/system/fandynamic.service
+sudo rm -f /root/fandynamic-stable.sh
+sudo rm -f /etc/fandynamic.conf
+sudo rm -f /var/log/fandynamic.log
 
 # Reload systemd
 sudo systemctl daemon-reload
 
-# Return to iDRAC AUTO mode
-source /etc/fandynamic.conf 2>/dev/null || IDRAC_IP="192.168.40.120" IDRAC_USER="root" IDRAC_PASS="calvin"
-sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01
+# Return to iDRAC AUTO mode (use hardcoded values if config file was deleted)
+sudo ipmitool -I lanplus -H "192.168.40.120" -U "root" -P "calvin" raw 0x30 0x30 0x01 0x01
+
+# Verify removal
+ls -la /etc/fandynamic.conf  # Should show "No such file"
+sudo systemctl status fandynamic.service  # Should show "Unit not found"
 ```
 
 **✅ Completely removed!** Fans are now back to iDRAC AUTO control.
+
+> **Note:** If your iDRAC IP/credentials are different, replace `192.168.40.120`, `root`, and `calvin` in the ipmitool command above before running it.
 
 ---
 
