@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Dell PowerEdge R730XD Dynamic Fan Control Daemon
+# Dell PowerEdge R730XD Dynamic Fan Control
 # Reads configuration from /etc/fandynamic.conf
 # No hardcoded values - fully configurable!
 # Includes auto-restart on failsafe detection
@@ -29,7 +29,7 @@ TEMP_MID=${TEMP_MID:-50}
 TEMP_HIGH=${TEMP_HIGH:-55}
 TEMP_FAILSAFE=${TEMP_FAILSAFE:-60}
 SENSOR_ID=${SENSOR_ID:-0Eh}
-RESTART_ON_AUTO=${RESTART_ON_AUTO:-true}  # Auto-restart on failsafe
+RESTART_ON_AUTO=${RESTART_ON_AUTO:-true}
 
 # Logging
 LOG_FILE="/var/log/fandynamic.log"
@@ -40,7 +40,7 @@ log() {
 log "===== Dell R730XD Fan Control Daemon Started ====="
 log "iDRAC IP: $IDRAC_IP"
 log "Check Interval: ${CHECK_INTERVAL}s"
-log "Temperature Curve: $TEMP_LOW/$TEMP_MID/$TEMP_HIGH°C (Failsafe: ${TEMP_FAILSAFE}°C)"
+log "Temperature Curve: $TEMP_LOW/$TEMP_MID/$TEMP_HIGH°C (failsafe: $TEMP_FAILSAFE°C)"
 log "Auto-restart on AUTO: $RESTART_ON_AUTO"
 
 # Initialize
@@ -50,25 +50,24 @@ LOOP_COUNT=0
 # Main daemon loop
 while true; do
     LOOP_COUNT=$((LOOP_COUNT + 1))
-    
+
     # Get current board temperature
-    BOARD_TEMP=$(ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep "$SENSOR_ID" | awk '{print $NF}' | sed 's/[^0-9]//g')
-    
+    BOARD_TEMP=$(ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep "$SENSOR_ID" | grep -oP '\d+(?=\s+degrees)' | head -1)
+
     if [ -z "$BOARD_TEMP" ]; then
         log "ERROR: Could not read board temperature from iDRAC"
         sleep "$CHECK_INTERVAL"
         continue
     fi
-    
+
     # Determine target PWM based on temperature
     if [ "$BOARD_TEMP" -ge "$TEMP_FAILSAFE" ]; then
         log "FAILSAFE: Board temp $BOARD_TEMP°C >= $TEMP_FAILSAFE°C, returning to AUTO"
-        ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01 2>/dev/null
-        TARGET_PWM="AUTO"
-        
-        # Auto-restart logic: wait for cooling, then restart
+        ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01
+
+        # Auto-restart logic: Wait for cooling, then restart
         if [ "$RESTART_ON_AUTO" = "true" ]; then
-            log "Auto-restart enabled: Waiting 120 seconds for temp to cool before restarting..."
+            log "Waiting 120 seconds for temp to cool before restarting fan control daemon..."
             sleep 120
             log "Restarting fan control daemon..."
             exit 0  # Exit cleanly - systemd will restart it
@@ -82,22 +81,18 @@ while true; do
     else
         TARGET_PWM="0x64"  # 100%
     fi
-    
+
     # Only change fans if PWM differs from last cycle (prevents ramping)
     if [ "$TARGET_PWM" != "$LAST_PWM" ]; then
-        if [ "$TARGET_PWM" = "AUTO" ]; then
-            log "Board temp: $BOARD_TEMP°C → Fans: AUTO (failsafe)"
-        else
-            # Convert hex PWM to percentage
-            PWM_PERCENT=$((16#${TARGET_PWM:2} * 100 / 255))
+        if [ "$TARGET_PWM" != "AUTO" ]; then
+            PWM_PERCENT=$((16#${TARGET_PWM:2}))
+            PWM_PERCENT=$((PWM_PERCENT * 100 / 255))
             log "Board temp: $BOARD_TEMP°C → Fans: $PWM_PERCENT% (PWM: $TARGET_PWM)"
-            
-            # Set fan speed via iDRAC
-            ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x02 0xFF "$TARGET_PWM" 2>/dev/null
+            ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x00
+            ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x02 0xff "$TARGET_PWM"
         fi
         LAST_PWM="$TARGET_PWM"
     fi
-    
-    # Sleep before next check
+
     sleep "$CHECK_INTERVAL"
 done
