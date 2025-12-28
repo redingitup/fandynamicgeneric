@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/24357638/README-updated.md)
+[README.md](https://github.com/user-attachments/files/24357647/README.10.md)
 # Dell PowerEdge R730XD Dynamic Fan Control
 
 Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple temperature → PWM curve.
@@ -227,30 +227,51 @@ sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x
 Remove all daemon files and revert to iDRAC AUTO control permanently:
 
 ```bash
-# Stop and disable daemon
+# Step 1: Stop and disable daemon
 sudo systemctl stop fandynamic.service
 sudo systemctl disable fandynamic.service
 
-# Remove all files (correct paths)
+# Step 2: Wait a moment for graceful shutdown
+sleep 2
+
+# Step 3: Remove systemd service file
 sudo rm -f /etc/systemd/system/fandynamic.service
+
+# Step 4: Remove script and config
 sudo rm -f /root/fandynamic-stable.sh
 sudo rm -f /etc/fandynamic.conf
+
+# Step 5: Remove log file
 sudo rm -f /var/log/fandynamic.log
 
-# Reload systemd
+# Step 6: Reload systemd to clear cache
 sudo systemctl daemon-reload
+sudo systemctl reset-failed
 
-# Return to iDRAC AUTO mode (use hardcoded values if config file was deleted)
+# Step 7: Return to iDRAC AUTO mode (use hardcoded values)
 sudo ipmitool -I lanplus -H "192.168.40.120" -U "root" -P "calvin" raw 0x30 0x30 0x01 0x01
 
-# Verify removal
-ls -la /etc/fandynamic.conf  # Should show "No such file"
-sudo systemctl status fandynamic.service  # Should show "Unit not found"
+# Step 8: Verify complete removal
+echo "=== Verification ==="
+echo "Config file:"
+ls -la /etc/fandynamic.conf 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
+
+echo "Script file:"
+ls -la /root/fandynamic-stable.sh 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
+
+echo "Service file:"
+ls -la /etc/systemd/system/fandynamic.service 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
+
+echo "Systemd status:"
+sudo systemctl status fandynamic.service 2>&1 | grep -q "Unit fandynamic.service could not be found" && echo "✅ Unregistered" || echo "❌ Still registered"
 ```
 
 **✅ Completely removed!** Fans are now back to iDRAC AUTO control.
 
-> **Note:** If your iDRAC IP/credentials are different, replace `192.168.40.120`, `root`, and `calvin` in the ipmitool command above before running it.
+> **Important:** If your iDRAC IP/credentials are different from defaults, edit the ipmitool command in Step 7 before running it:
+> ```bash
+> sudo ipmitool -I lanplus -H "YOUR_IDRAC_IP" -U "YOUR_USER" -P "YOUR_PASS" raw 0x30 0x30 0x01 0x01
+> ```
 
 ---
 
