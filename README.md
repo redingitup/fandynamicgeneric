@@ -48,7 +48,7 @@ cd fandynamicgeneric
 nano fandynamic.conf
 ```
 
-**Change ONLY these 3 lines to match YOUR server:**
+**Change these 3 lines to match YOUR server and adjust fan curve if desired:**
 ```bash
 IDRAC_IP="192.168.40.120"      # ← Change to YOUR iDRAC IP
 IDRAC_USER="root"              # ← Change to YOUR username (if not "root")
