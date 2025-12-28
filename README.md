@@ -229,12 +229,32 @@ sudo tail -f /var/log/fandynamic.log
 # Restart daemon
 sudo systemctl restart fandynamic.service
 
-# Stop daemon (fans go AUTO)
-sudo systemctl stop fandynamic.service
-
-# Start daemon again
+# Start daemon
 sudo systemctl start fandynamic.service
 ```
+
+---
+
+## ⛔ Stop Daemon (Fans go AUTO)
+
+**Important:** Due to `RESTART_ON_AUTO=true`, stopping requires a 3-step process:
+
+```bash
+# Step 1: Disable auto-restart
+sudo systemctl disable fandynamic.service
+
+# Step 2: Stop the daemon
+sudo systemctl stop fandynamic.service
+
+# Step 3: Manually return fans to AUTO
+source /etc/fandynamic.conf
+sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01
+
+# Step 4 (optional): Re-enable to restore auto-restart on failsafe
+sudo systemctl enable fandynamic.service
+```
+
+**Why 3 steps?** The daemon is configured to auto-restart itself after failsafe cooling periods. Disabling the service first prevents it from immediately restarting.
 
 ---
 
@@ -267,7 +287,7 @@ When temperature exceeds `TEMP_FAILSAFE`:
 1. Daemon returns fans to iDRAC AUTO control
 2. Waits 120 seconds for cooling
 3. Cleanly exits
-4. Systemd automatically restarts it
+4. Systemd automatically restarts it (if enabled)
 5. Fan control resumes
 
 To **disable** auto-restart:
@@ -435,7 +455,7 @@ For each new server:
 
 ## Changelog
 
-- **v1.5** - Fixed systemctl stop hanging; added timeout to ipmitool; added signal handlers; closed stdin
+- **v1.5** - Fixed timeout handling; added signal handlers; closed stdin; documented proper stop procedure
 - **v1.4** - Simplified monitoring commands; removed complex alignment
 - **v1.3** - Filtered disabled sensors (ns status) and limited output to 3 temperatures; reordered temps to Board/Inlet/Exhaust; improved alignment
 - **v1.2** - Fixed temperature grep pattern for `Temp` vs `Board Temp` label variations; added sed to rename `Temp` to `Board Temp` in output
