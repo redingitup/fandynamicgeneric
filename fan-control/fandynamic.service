@@ -1,0 +1,14 @@
+[Unit]
+Description=Dell R730XD Dynamic Fan Control Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/root/fandynamic-stable.sh
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
