@@ -1,4 +1,4 @@
-# README
+# ReadMe
 # Dell PowerEdge R730XD Dynamic Fan Control
 
 Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple temperature → PWM curve.
@@ -111,32 +111,76 @@ ping 192.168.40.120
 
 ---
 
-## Verify Fans Working
+## Quick Commands
 
-Check current temperature and fan speeds:
+### Temporary Monitoring (One-Off)
 
+**Check Temperature & Fans Right Now:**
 ```bash
-# Read from config file
-source /etc/fandynamic.conf
-
-# Show all fans
-sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan
-
-# Show board temperature (0Eh)
-sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep 0Eh
+# One-liner to check current temps and fan speeds
+source /etc/fandynamic.conf && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep "0Eh\|Board" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan
 ```
 
-Check daemon logs:
+**Watch Temps & Fans Live (5 second refresh):**
+```bash
+source /etc/fandynamic.conf && watch -n 5 "echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Temperature | grep '0Eh\|Board' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Fan"
+```
+
+**View Daemon Logs in Real-Time:**
 ```bash
 sudo tail -f /var/log/fandynamic.log
 ```
 
-Expected output:
+---
+
+### Persistent Monitoring (After Install - Optional)
+
+If you want a **persistent monitoring session** that survives SSH disconnects:
+
+**Install tmux first:**
+```bash
+sudo apt-get install tmux
+```
+
+**Create persistent monitoring session:**
+```bash
+tmux new-session -d -s fandynamic-monitor
+tmux send-keys -t fandynamic-monitor "source /etc/fandynamic.conf && watch -n 5 \"echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Temperature | grep '0Eh|Board' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Fan\"" Enter
+```
+
+**Attach to monitoring session anytime:**
+```bash
+tmux attach-session -t fandynamic-monitor
+```
+
+**Detach from session (leave running):**
+```bash
+# Press: Ctrl+B then D
+```
+
+**Kill monitoring session when done:**
+```bash
+tmux kill-session -t fandynamic-monitor
+```
+
+---
+
+### Expected Output Examples
+
+**Daemon logs:**
 ```
 2025-12-28 12:30:15 - ===== Dell R730XD Fan Control Daemon Started =====
 2025-12-28 12:30:15 - iDRAC IP: 192.168.40.120
 2025-12-28 12:30:15 - Check Interval: 60s
 2025-12-28 12:30:45 - Board temp: 42°C → Fans: 10% (PWM: 0x0A)
+```
+
+**Fan speeds from ipmitool:**
+```
+Fan1             | 3000 RPM      | ok
+Fan2             | 3000 RPM      | ok
+Fan3             | 3000 RPM      | ok
+...
 ```
 
 ---
@@ -260,7 +304,10 @@ sudo ipmitool -I lanplus -H "192.168.40.120" -U "root" -P "calvin" raw 0x30 0x30
 # Step 8: Remove git repository folder
 rm -rf ~/fandynamicgeneric
 
-# Step 9: Verify complete removal
+# Step 9: If you created monitoring session, kill it
+tmux kill-session -t fandynamic-monitor 2>/dev/null || true
+
+# Step 10: Verify complete removal
 echo "=== Verification ==="
 echo "Config file:"
 ls -la /etc/fandynamic.conf 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
