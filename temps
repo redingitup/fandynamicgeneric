@@ -1,0 +1,15 @@
+#!/bin/bash
+# Simple command to show temps and fans
+# Usage: temps  (shows temps and fan speeds once)
+
+source /etc/fandynamic.conf 2>/dev/null || {
+    echo "ERROR: /etc/fandynamic.conf not found. Is fandynamic installed?"
+    exit 1
+}
+
+echo "=== BOARD TEMPERATURE ==="
+sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep "$SENSOR_ID" | grep -oP '(\d+)\s+degrees' || echo "ERROR: Could not read temperature"
+
+echo ""
+echo "=== FAN SPEEDS ==="
+sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM" || echo "ERROR: Could not read fans"
