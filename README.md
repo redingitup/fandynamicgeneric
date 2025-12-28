@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/24357698/README.12.md)
+# README
 # Dell PowerEdge R730XD Dynamic Fan Control
 
 Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple temperature → PWM curve.
@@ -257,7 +257,10 @@ sudo systemctl reset-failed
 # Step 7: Return to iDRAC AUTO mode (use hardcoded values)
 sudo ipmitool -I lanplus -H "192.168.40.120" -U "root" -P "calvin" raw 0x30 0x30 0x01 0x01
 
-# Step 8: Verify complete removal
+# Step 8: Remove git repository folder
+rm -rf ~/fandynamicgeneric
+
+# Step 9: Verify complete removal
 echo "=== Verification ==="
 echo "Config file:"
 ls -la /etc/fandynamic.conf 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
@@ -268,43 +271,18 @@ ls -la /root/fandynamic-stable.sh 2>&1 | grep -q "No such file" && echo "✅ Rem
 echo "Service file:"
 ls -la /etc/systemd/system/fandynamic.service 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
 
+echo "Git repo folder:"
+ls -la ~/fandynamicgeneric 2>&1 | grep -q "No such file" && echo "✅ Removed" || echo "❌ Still exists"
+
 echo "Systemd status:"
 sudo systemctl status fandynamic.service 2>&1 | grep -q "Unit fandynamic.service could not be found" && echo "✅ Unregistered" || echo "❌ Still registered"
 ```
 
 **✅ Completely removed!** Fans are now back to iDRAC AUTO control.
 
+To **reinstall**, simply start fresh from the top: Clone the repo, edit config, and copy files.
+
 > **Important:** If your iDRAC IP/credentials are different from defaults, edit the ipmitool command in Step 7 before running it.
-
----
-
-## Clean Reinstall After Removal
-
-If you want to **clean reinstall from GitHub**:
-
-```bash
-# Remove the entire git repository folder
-rm -rf ~/fandynamicgeneric
-
-# Clone fresh from GitHub
-cd ~
-git clone https://github.com/redingitup/fandynamicgeneric.git
-cd fandynamicgeneric
-
-# Edit config BEFORE copying (see Step 2 above)
-nano fandynamic.conf
-
-# Then copy and install
-sudo cp fandynamic.conf /etc/
-sudo cp fandynamic-stable.sh /root/
-sudo chmod +x /root/fandynamic-stable.sh
-sudo cp systemd/fandynamic.service /etc/systemd/system/
-
-# Start daemon
-sudo systemctl daemon-reload
-sudo systemctl enable fandynamic.service
-sudo systemctl start fandynamic.service
-```
 
 ---
 
