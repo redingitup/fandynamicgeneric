@@ -231,7 +231,12 @@ sudo systemctl restart fandynamic.service
 
 # Start daemon
 sudo systemctl start fandynamic.service
+
+# Re-enable auto-start on failsafe (run after stopping with disable)
+sudo systemctl enable fandynamic.service
 ```
+
+**Note:** If you previously disabled the service (`systemctl disable`), run `systemctl enable` to restore auto-restart on failsafe.
 
 ---
 
@@ -249,12 +254,15 @@ sudo systemctl stop fandynamic.service
 # Step 3: Manually return fans to AUTO
 source /etc/fandynamic.conf
 sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01
-
-# Step 4 (optional): Re-enable to restore auto-restart on failsafe
-sudo systemctl enable fandynamic.service
 ```
 
 **Why 3 steps?** The daemon is configured to auto-restart itself after failsafe cooling periods. Disabling the service first prevents it from immediately restarting.
+
+When you're ready to resume, just run:
+```bash
+sudo systemctl enable fandynamic.service
+sudo systemctl start fandynamic.service
+```
 
 ---
 
