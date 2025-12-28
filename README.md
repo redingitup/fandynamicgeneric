@@ -116,22 +116,41 @@ ping 192.168.40.120
 
 ## 📊 Monitoring Commands
 
-### Temporary (One-Time Check)
+---
 
-**Quick single check:**
+### TEMPORARY: One-Time Check (Single Command, No Setup)
+
+**Use this right now without any setup:**
 ```bash
-temps
+source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -E "Board|Inlet|Exhaust" && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"
 ```
 
-To enable this, add to your `~/.bashrc`:
+Shows once and exits. Good for quick checks.
+
+---
+
+### PERSISTENT: Alias `temps` (Survives Reboot - Add to ~/.bashrc)
+
+**To make `temps` work forever (even after reboot):**
+
+Edit your ~/.bashrc:
+```bash
+nano ~/.bashrc
+```
+
+Add this line at the end:
 ```bash
 alias temps='source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -E "Board|Inlet|Exhaust" && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
 ```
 
-Then reload:
+Save: `Ctrl+O` → `Ctrl+X`
+
+Reload:
 ```bash
 source ~/.bashrc
 ```
+
+Now `temps` works forever in every new terminal! 🎉
 
 **Output:**
 ```
@@ -148,34 +167,52 @@ Fan2 RPM         | 3000 RPM
 
 ---
 
-### Persistent (Live Monitoring with Auto-Refresh)
+### TEMPORARY: Live Monitoring (Auto-Refreshes Every 5 Seconds)
 
-**Watch temps & fans update every 5 seconds:**
+**Use this one-liner (no setup needed, exits with `Ctrl+C`):**
 ```bash
 watch -n 5 'source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -E "Board|Inlet|Exhaust" && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
 ```
 
 - **Exit**: `Ctrl+C`
-- **Refreshes every 5 seconds** automatically
+- **Refreshes**: Every 5 seconds automatically
 
-Or add to `~/.bashrc` for easier access:
+---
+
+### PERSISTENT: Alias `tempwatch` (Survives Reboot - Add to ~/.bashrc)
+
+**To make live monitoring permanent:**
+
+Edit:
+```bash
+nano ~/.bashrc
+```
+
+Add this line:
 ```bash
 alias tempwatch='watch -n 5 "source /etc/fandynamic.conf && echo \"=== TEMPERATURES ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Temperature 2>/dev/null | grep -E \"Board|Inlet|Exhaust\" && echo \"\" && echo \"=== FAN SPEEDS ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Fan 2>/dev/null | grep \"RPM\""'
 ```
 
-Then just type:
+Save and reload:
+```bash
+source ~/.bashrc
+```
+
+Now just type:
 ```bash
 tempwatch
 ```
 
 ---
 
-### Comparison
+### Quick Comparison
 
-| Command | Shows | Refreshes? | Exit |
-|---------|-------|-----------|------|
-| `temps` | Board, Inlet, Exhaust, Fans | No (once) | N/A |
-| `tempwatch` | Board, Inlet, Exhaust, Fans | Every 5 sec | `Ctrl+C` |
+| Command | Lasts Until | Best For |
+|---------|-------------|----------|
+| One-liner | One run | Quick one-time check |
+| `temps` alias (bash) | Forever (reboot-safe) | Permanent quick checks |
+| `watch` one-liner | Until `Ctrl+C` | Live monitoring once |
+| `tempwatch` alias | Forever (reboot-safe) | Permanent live monitoring |
 
 ---
 
