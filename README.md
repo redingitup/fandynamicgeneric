@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/24357647/README.10.md)
+[README.md](https://github.com/user-attachments/files/24357679/README.11.md)
 # Dell PowerEdge R730XD Dynamic Fan Control
 
 Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple temperature → PWM curve.
@@ -272,6 +272,36 @@ sudo systemctl status fandynamic.service 2>&1 | grep -q "Unit fandynamic.service
 > ```bash
 > sudo ipmitool -I lanplus -H "YOUR_IDRAC_IP" -U "YOUR_USER" -P "YOUR_PASS" raw 0x30 0x30 0x01 0x01
 > ```
+
+---
+
+## Clean Reinstall After Removal
+
+If you want to **clean reinstall from GitHub**, also remove the git folder:
+
+```bash
+# Remove the entire git repository folder (including .git directory)
+rm -rf ~/fandynamicgeneric
+
+# Now clone fresh from GitHub
+cd ~
+git clone https://github.com/redingitup/fandynamicgeneric.git
+cd fandynamicgeneric
+
+# Continue with normal installation
+sudo cp fandynamic.conf /etc/
+sudo cp fandynamic-stable.sh /root/
+sudo chmod +x /root/fandynamic-stable.sh
+sudo cp systemd/fandynamic.service /etc/systemd/system/
+
+# Edit YOUR iDRAC credentials
+sudo nano /etc/fandynamic.conf
+
+# Start daemon
+sudo systemctl daemon-reload
+sudo systemctl enable fandynamic.service
+sudo systemctl start fandynamic.service
+```
 
 ---
 
