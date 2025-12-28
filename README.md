@@ -1,11 +1,11 @@
-# ReadMe
+# README
 # Dell PowerEdge R730XD Dynamic Fan Control
 
 Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple temperature → PWM curve.
 
 - **Server:** Dell PowerEdge R730XD
 - **iDRAC:** IPMI over LAN
-- **Temp sensor:** Board sensor `0Eh`
+- **Temp sensor:** Board sensor `0Eh` (automatically parsed)
 - **Configuration:** Edit git file BEFORE copying (no corruption!)
 - **Auto-restart:** Automatically restarts if failsafe triggers
 - **Curve (board temp):**
@@ -94,6 +94,7 @@ Edit **`fandynamic.conf`** in the git repo before copying. No script editing nee
 | **TEMP_HIGH** | Threshold for 50%→100% jump | `55` | ❌ Optional |
 | **TEMP_FAILSAFE** | Return to AUTO failsafe | `60` | ❌ Optional |
 | **CHECK_INTERVAL** | Check temp every X seconds | `60` | ❌ Optional |
+| **SENSOR_ID** | iDRAC sensor ID | `0Eh` | ❌ Optional |
 | **RESTART_ON_AUTO** | Auto-restart on failsafe | `true` | ❌ Optional |
 
 ### Finding Your iDRAC IP
@@ -118,12 +119,12 @@ ping 192.168.40.120
 **Check Temperature & Fans Right Now:**
 ```bash
 # One-liner to check current temps and fan speeds
-source /etc/fandynamic.conf && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep "0Eh\|Board" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan
+source /etc/fandynamic.conf && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep "0Eh\|Board\|Exhaust" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan
 ```
 
 **Watch Temps & Fans Live (5 second refresh):**
 ```bash
-source /etc/fandynamic.conf && watch -n 5 "echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Temperature | grep '0Eh\|Board' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Fan"
+source /etc/fandynamic.conf && watch -n 5 "echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Temperature | grep '0Eh\|Board\|Exhaust' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H \"$IDRAC_IP\" -U \"$IDRAC_USER\" -P \"$IDRAC_PASS\" sdr type Fan"
 ```
 
 **View Daemon Logs in Real-Time:**
@@ -145,7 +146,7 @@ sudo apt-get install tmux
 **Create persistent monitoring session:**
 ```bash
 tmux new-session -d -s fandynamic-monitor
-tmux send-keys -t fandynamic-monitor "source /etc/fandynamic.conf && watch -n 5 \"echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Temperature | grep '0Eh|Board' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Fan\"" Enter
+tmux send-keys -t fandynamic-monitor "source /etc/fandynamic.conf && watch -n 5 \"echo '=== TEMPS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Temperature | grep '0Eh|Board|Exhaust' && echo '' && echo '=== FANS ===' && sudo ipmitool -I lanplus -H '$IDRAC_IP' -U '$IDRAC_USER' -P '$IDRAC_PASS' sdr type Fan\"" Enter
 ```
 
 **Attach to monitoring session anytime:**
@@ -169,17 +170,18 @@ tmux kill-session -t fandynamic-monitor
 
 **Daemon logs:**
 ```
-2025-12-28 12:30:15 - ===== Dell R730XD Fan Control Daemon Started =====
-2025-12-28 12:30:15 - iDRAC IP: 192.168.40.120
-2025-12-28 12:30:15 - Check Interval: 60s
-2025-12-28 12:30:45 - Board temp: 42°C → Fans: 10% (PWM: 0x0A)
+2025-12-28 13:56:38 - ===== Dell R730XD Fan Control Daemon Started =====
+2025-12-28 13:56:38 - iDRAC IP: 192.168.40.120
+2025-12-28 13:56:38 - Check Interval: 60s
+2025-12-28 13:56:38 - Temperature Curve: 45/50/55°C (failsafe: 60°C)
+2025-12-28 13:57:00 - Board temp: 32°C → Fans: 10% (PWM: 0x0A)
 ```
 
 **Fan speeds from ipmitool:**
 ```
-Fan1             | 3000 RPM      | ok
-Fan2             | 3000 RPM      | ok
-Fan3             | 3000 RPM      | ok
+Fan1 RPM         | 3000 RPM      | ok
+Fan2 RPM         | 3000 RPM      | ok
+Fan3 RPM         | 3000 RPM      | ok
 ...
 ```
 
@@ -337,7 +339,7 @@ To **reinstall**, simply start fresh from the top: Clone the repo, edit config, 
 
 1. **Systemd** starts `/root/fandynamic-stable.sh` at boot
 2. **Script reads** `/etc/fandynamic.conf` for all settings
-3. **Script reads** board temp (sensor 0Eh) every 60 seconds
+3. **Script reads** board temp (sensor 0Eh) every 60 seconds with smart parsing
 4. **Maps temp** → PWM using configured curve
 5. **Only changes** fans if PWM differs (prevents ramping)
 6. **≥60°C** → Automatically returns control to iDRAC AUTO failsafe
@@ -389,14 +391,14 @@ sudo tail -20 /var/log/fandynamic.log
 
 Verify config is correct:
 ```bash
-cat /etc/fandynamic.conf | grep -E "IDRAC|TEMP"
+cat /etc/fandynamic.conf | grep -E "IDRAC|TEMP|SENSOR"
 ```
 
 ### Daemon keeps restarting
 Check if temp is above failsafe:
 ```bash
 source /etc/fandynamic.conf
-sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep 0Eh
+sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature | grep "0Eh\|Board"
 ```
 
 To disable auto-restart:
@@ -436,6 +438,13 @@ For each new server:
 1. Clone the repo
 2. Edit `fandynamic.conf` with new iDRAC IP/credentials
 3. Copy and install
+
+---
+
+## Changelog
+
+- **v1.1** - Fixed sensor `0Eh` parsing with grep -oP pattern; added SENSOR_ID config option; improved error handling
+- **v1.0** - Initial release
 
 ---
 
