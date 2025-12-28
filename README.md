@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/24357679/README.11.md)
+[README.md](https://github.com/user-attachments/files/24357698/README.12.md)
 # Dell PowerEdge R730XD Dynamic Fan Control
 
 Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple temperature → PWM curve.
@@ -6,7 +6,7 @@ Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple t
 - **Server:** Dell PowerEdge R730XD
 - **iDRAC:** IPMI over LAN
 - **Temp sensor:** Board sensor `0Eh`
-- **Configuration:** External `.conf` file (no script editing needed!)
+- **Configuration:** Edit git file BEFORE copying (no corruption!)
 - **Auto-restart:** Automatically restarts if failsafe triggers
 - **Curve (board temp):**
   - ≤45°C → 10%
@@ -20,23 +20,20 @@ Dynamic fan controller for Dell PowerEdge R730XD using iDRAC/IPMI and a simple t
 
 ## ⚠️ QUICK START (3 STEPS)
 
-### Step 1: Clone & Copy Files
+### Step 1: Clone Repository
 ```bash
 cd ~
 git clone https://github.com/redingitup/fandynamicgeneric.git
 cd fandynamicgeneric
-sudo cp fandynamic.conf /etc/
-sudo cp fandynamic-stable.sh /root/
-sudo chmod +x /root/fandynamic-stable.sh
-sudo cp systemd/fandynamic.service /etc/systemd/system/
 ```
 
-### Step 2: Edit Configuration (⚠️ DO THIS!)
+### Step 2: Edit Configuration BEFORE Installing (⚠️ DO THIS FIRST!)
 ```bash
-sudo nano /etc/fandynamic.conf
+# Edit the config file in the repo BEFORE copying to system
+nano fandynamic.conf
 ```
 
-**Edit ONLY these 3 lines:**
+**Change ONLY these 3 lines to match YOUR server:**
 ```bash
 IDRAC_IP="192.168.40.120"      # ← Change to YOUR iDRAC IP
 IDRAC_USER="root"              # ← Change to YOUR username (if not "root")
@@ -45,8 +42,15 @@ IDRAC_PASS="calvin"            # ← Change to YOUR password (if not "calvin")
 
 **Save:** `Ctrl+O` → `Ctrl+X`
 
-### Step 3: Start Daemon
+### Step 3: Copy Files & Start Daemon
 ```bash
+# Copy the edited config and other files
+sudo cp fandynamic.conf /etc/
+sudo cp fandynamic-stable.sh /root/
+sudo chmod +x /root/fandynamic-stable.sh
+sudo cp systemd/fandynamic.service /etc/systemd/system/
+
+# Start the daemon
 sudo systemctl daemon-reload
 sudo systemctl enable fandynamic.service
 sudo systemctl start fandynamic.service
@@ -78,7 +82,7 @@ which ipmitool
 
 ## Configuration File Guide
 
-The **`/etc/fandynamic.conf`** file is where you customize everything. No script editing needed!
+Edit **`fandynamic.conf`** in the git repo before copying. No script editing needed!
 
 | Variable | What It Is | Default | Required? |
 |----------|-----------|---------|-----------|
@@ -168,7 +172,7 @@ sudo systemctl start fandynamic.service
 
 ## Customize Temperature Curve
 
-Edit `/etc/fandynamic.conf` and change these values:
+Edit the config file in `/etc/`:
 
 ```bash
 sudo nano /etc/fandynamic.conf
@@ -200,9 +204,11 @@ When temperature exceeds `TEMP_FAILSAFE`:
 4. Systemd automatically restarts it
 5. Fan control resumes
 
-To **disable** auto-restart, edit `/etc/fandynamic.conf`:
+To **disable** auto-restart:
 ```bash
-RESTART_ON_AUTO="false"
+sudo nano /etc/fandynamic.conf
+# Change: RESTART_ON_AUTO="false"
+sudo systemctl restart fandynamic.service
 ```
 
 ---
@@ -268,34 +274,31 @@ sudo systemctl status fandynamic.service 2>&1 | grep -q "Unit fandynamic.service
 
 **✅ Completely removed!** Fans are now back to iDRAC AUTO control.
 
-> **Important:** If your iDRAC IP/credentials are different from defaults, edit the ipmitool command in Step 7 before running it:
-> ```bash
-> sudo ipmitool -I lanplus -H "YOUR_IDRAC_IP" -U "YOUR_USER" -P "YOUR_PASS" raw 0x30 0x30 0x01 0x01
-> ```
+> **Important:** If your iDRAC IP/credentials are different from defaults, edit the ipmitool command in Step 7 before running it.
 
 ---
 
 ## Clean Reinstall After Removal
 
-If you want to **clean reinstall from GitHub**, also remove the git folder:
+If you want to **clean reinstall from GitHub**:
 
 ```bash
-# Remove the entire git repository folder (including .git directory)
+# Remove the entire git repository folder
 rm -rf ~/fandynamicgeneric
 
-# Now clone fresh from GitHub
+# Clone fresh from GitHub
 cd ~
 git clone https://github.com/redingitup/fandynamicgeneric.git
 cd fandynamicgeneric
 
-# Continue with normal installation
+# Edit config BEFORE copying (see Step 2 above)
+nano fandynamic.conf
+
+# Then copy and install
 sudo cp fandynamic.conf /etc/
 sudo cp fandynamic-stable.sh /root/
 sudo chmod +x /root/fandynamic-stable.sh
 sudo cp systemd/fandynamic.service /etc/systemd/system/
-
-# Edit YOUR iDRAC credentials
-sudo nano /etc/fandynamic.conf
 
 # Start daemon
 sudo systemctl daemon-reload
@@ -391,8 +394,8 @@ sudo systemctl restart fandynamic.service
 
 ## Files in This Repo
 
-| File | Purpose | Needs Editing? |
-|------|---------|----------------|
+| File | Purpose | Edit Before Copy? |
+|------|---------|------------------|
 | `fandynamic.conf` | Configuration (IPs, temps, settings) | ✅ **YES** |
 | `fandynamic-stable.sh` | Main daemon script | ❌ NO |
 | `systemd/fandynamic.service` | Systemd unit file | ❌ NO |
@@ -404,14 +407,10 @@ sudo systemctl restart fandynamic.service
 
 **✅ YES - Fully reusable!**
 
-Simply edit `/etc/fandynamic.conf` with different server settings. The script is generic and works on any R730XD.
-
-**For another server, just:**
-```bash
-sudo nano /etc/fandynamic.conf
-# Change IDRAC_IP, IDRAC_USER, IDRAC_PASS
-sudo systemctl restart fandynamic.service
-```
+For each new server:
+1. Clone the repo
+2. Edit `fandynamic.conf` with new iDRAC IP/credentials
+3. Copy and install
 
 ---
 
