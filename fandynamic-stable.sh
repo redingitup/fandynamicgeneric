@@ -7,6 +7,13 @@
 
 set -e
 
+# Close stdin immediately - no interactive input allowed
+exec 0<&-
+
+# Redirect all output to log file (prevents systemd from waiting for it)
+LOG_FILE="/var/log/fandynamic.log"
+exec 1>>"$LOG_FILE" 2>&1
+
 # Load configuration from /etc/fandynamic.conf
 if [ ! -f /etc/fandynamic.conf ]; then
     echo "ERROR: /etc/fandynamic.conf not found!"
@@ -30,16 +37,17 @@ TEMP_HIGH=${TEMP_HIGH:-55}
 TEMP_FAILSAFE=${TEMP_FAILSAFE:-60}
 SENSOR_ID=${SENSOR_ID:-0Eh}
 RESTART_ON_AUTO=${RESTART_ON_AUTO:-true}
+IPMITOOL_TIMEOUT=${IPMITOOL_TIMEOUT:-10}  # 10 second timeout for ipmitool
 
-# Logging
-LOG_FILE="/var/log/fandynamic.log"
+# Logging function
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
 log "===== Dell R730XD Fan Control Daemon Started ====="
 log "iDRAC IP: $IDRAC_IP"
 log "Check Interval: ${CHECK_INTERVAL}s"
+log "ipmitool Timeout: ${IPMITOOL_TIMEOUT}s"
 log "Temperature Curve: $TEMP_LOW/$TEMP_MID/$TEMP_HIGH°C (failsafe: $TEMP_FAILSAFE°C)"
 log "Auto-restart on AUTO: $RESTART_ON_AUTO"
 
@@ -47,15 +55,18 @@ log "Auto-restart on AUTO: $RESTART_ON_AUTO"
 LAST_PWM=""
 LOOP_COUNT=0
 
+# Trap signals for clean shutdown
+trap 'log "Daemon interrupted, exiting cleanly..."; exit 0' SIGTERM SIGINT
+
 # Main daemon loop
 while true; do
     LOOP_COUNT=$((LOOP_COUNT + 1))
 
-    # Get current board temperature
-    BOARD_TEMP=$(ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep "$SENSOR_ID" | grep -oP '\d+(?=\s+degrees)' | head -1)
+    # Get current board temperature with timeout
+    BOARD_TEMP=$(timeout "$IPMITOOL_TIMEOUT" ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep "$SENSOR_ID" | grep -oP '\d+(?=\s+degrees)' | head -1)
 
     if [ -z "$BOARD_TEMP" ]; then
-        log "ERROR: Could not read board temperature from iDRAC"
+        log "ERROR: Could not read board temperature from iDRAC (timeout after ${IPMITOOL_TIMEOUT}s)"
         sleep "$CHECK_INTERVAL"
         continue
     fi
@@ -63,7 +74,7 @@ while true; do
     # Determine target PWM based on temperature
     if [ "$BOARD_TEMP" -ge "$TEMP_FAILSAFE" ]; then
         log "FAILSAFE: Board temp $BOARD_TEMP°C >= $TEMP_FAILSAFE°C, returning to AUTO"
-        ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01
+        timeout "$IPMITOOL_TIMEOUT" ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x01 || log "WARNING: ipmitool timeout during failsafe"
 
         # Auto-restart logic: Wait for cooling, then restart
         if [ "$RESTART_ON_AUTO" = "true" ]; then
@@ -88,8 +99,8 @@ while true; do
             PWM_PERCENT=$((16#${TARGET_PWM:2}))
             PWM_PERCENT=$((PWM_PERCENT * 100 / 255))
             log "Board temp: $BOARD_TEMP°C → Fans: $PWM_PERCENT% (PWM: $TARGET_PWM)"
-            ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x00
-            ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x02 0xff "$TARGET_PWM"
+            timeout "$IPMITOOL_TIMEOUT" ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x01 0x00 || log "WARNING: ipmitool timeout setting manual mode"
+            timeout "$IPMITOOL_TIMEOUT" ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" raw 0x30 0x30 0x02 0xff "$TARGET_PWM" || log "WARNING: ipmitool timeout setting PWM"
         fi
         LAST_PWM="$TARGET_PWM"
     fi
