@@ -122,10 +122,10 @@ ping 192.168.40.120
 
 **Use this right now without any setup:**
 ```bash
-source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -v " ns " | grep -E "Temp|Inlet|Exhaust" | sed 's/^Temp /Board Temp /' | awk 'NR==1{board=$0} NR==2{inlet=$0} NR==3{exhaust=$0} END{print board "\n" inlet "\n" exhaust}' && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"
+source /etc/fandynamic.conf && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -v " ns " && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"
 ```
 
-Shows once and exits. Good for quick checks.
+Shows temperatures and fan speeds. Good for quick checks.
 
 ---
 
@@ -140,7 +140,7 @@ nano ~/.bashrc
 
 Add this line at the end:
 ```bash
-alias temps='source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -v " ns " | grep -E "Temp|Inlet|Exhaust" | sed "s/^Temp /Board Temp /" | awk '\''NR==1{board=$0} NR==2{inlet=$0} NR==3{exhaust=$0} END{print board "\n" inlet "\n" exhaust}'\'' && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
+alias temps='source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -v " ns " && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
 ```
 
 Save: `Ctrl+O` → `Ctrl+X`
@@ -155,9 +155,9 @@ Now `temps` works forever in every new terminal! 🎉
 **Output:**
 ```
 === TEMPERATURES ===
-Board Temp       | 0Eh | ok | 3.1 | 42 degrees C
 Inlet Temp       | 04h | ok | 7.1 | 20 degrees C
 Exhaust Temp     | 01h | ok | 7.1 | 34 degrees C
+Temp             | 0Eh | ok | 3.1 | 42 degrees C
 
 === FAN SPEEDS ===
 Fan1 RPM         | 30h | ok | 7.1 | 3360 RPM
@@ -171,7 +171,7 @@ Fan2 RPM         | 31h | ok | 7.1 | 3360 RPM
 
 **Use this one-liner (no setup needed, exits with `Ctrl+C`):**
 ```bash
-watch -n 5 'source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -v " ns " | grep -E "Temp|Inlet|Exhaust" | sed "s/^Temp /Board Temp /" | awk '\''NR==1{board=$0} NR==2{inlet=$0} NR==3{exhaust=$0} END{print board "\n" inlet "\n" exhaust}'\'' && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
+watch -n 5 'source /etc/fandynamic.conf && echo "=== TEMPERATURES ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Temperature 2>/dev/null | grep -v " ns " && echo "" && echo "=== FAN SPEEDS ===" && sudo ipmitool -I lanplus -H "$IDRAC_IP" -U "$IDRAC_USER" -P "$IDRAC_PASS" sdr type Fan 2>/dev/null | grep "RPM"'
 ```
 
 - **Exit**: `Ctrl+C`
@@ -190,7 +190,7 @@ nano ~/.bashrc
 
 Add this line:
 ```bash
-alias tempwatch='watch -n 5 "source /etc/fandynamic.conf && echo \"=== TEMPERATURES ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Temperature 2>/dev/null | grep -v \" ns \" | grep -E \"Temp|Inlet|Exhaust\" | sed \"s/^Temp /Board Temp /\" | awk '\'\'NR==1{board=\$0} NR==2{inlet=\$0} NR==3{exhaust=\$0} END{print board \"\\\\n\" inlet \"\\\\n\" exhaust}'\''' && echo \"\" && echo \"=== FAN SPEEDS ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Fan 2>/dev/null | grep \"RPM\""'
+alias tempwatch='watch -n 5 "source /etc/fandynamic.conf && echo \"=== TEMPERATURES ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Temperature 2>/dev/null | grep -v \" ns \" && echo \"\" && echo \"=== FAN SPEEDS ===\" && sudo ipmitool -I lanplus -H \"\$IDRAC_IP\" -U \"\$IDRAC_USER\" -P \"\$IDRAC_PASS\" sdr type Fan 2>/dev/null | grep \"RPM\""'
 ```
 
 Save and reload:
@@ -433,6 +433,7 @@ For each new server:
 
 ## Changelog
 
+- **v1.4** - Simplified monitoring commands; removed complex alignment
 - **v1.3** - Filtered disabled sensors (ns status) and limited output to 3 temperatures; reordered temps to Board/Inlet/Exhaust; improved alignment
 - **v1.2** - Fixed temperature grep pattern for `Temp` vs `Board Temp` label variations; added sed to rename `Temp` to `Board Temp` in output
 - **v1.1** - Fixed sensor `0Eh` parsing; added SENSOR_ID config; improved error handling
