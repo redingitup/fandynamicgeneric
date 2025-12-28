@@ -105,6 +105,7 @@ Edit **`fandynamic.conf`** in the git repo before copying.
 | **CHECK_INTERVAL** | Check temp every X seconds | `60` | ❌ Optional |
 | **SENSOR_ID** | iDRAC sensor ID | `0Eh` | ❌ Optional |
 | **RESTART_ON_AUTO** | Auto-restart on failsafe | `true` | ❌ Optional |
+| **IPMITOOL_TIMEOUT** | Max seconds to wait for ipmitool | `10` | ❌ Optional |
 
 ### Finding Your iDRAC IP
 ```bash
@@ -418,6 +419,7 @@ sudo systemctl restart fandynamic.service
 | `fandynamic.conf` | Configuration (edit before copying) |
 | `fandynamic-stable.sh` | Main daemon script |
 | `systemd/fandynamic.service` | Systemd unit file |
+| `UPDATE_GUIDE.md` | v1.5 update guide and changelog |
 | `README.md` | This file |
 
 ---
@@ -433,6 +435,7 @@ For each new server:
 
 ## Changelog
 
+- **v1.5** - Fixed systemctl stop hanging; added timeout to ipmitool; added signal handlers; closed stdin
 - **v1.4** - Simplified monitoring commands; removed complex alignment
 - **v1.3** - Filtered disabled sensors (ns status) and limited output to 3 temperatures; reordered temps to Board/Inlet/Exhaust; improved alignment
 - **v1.2** - Fixed temperature grep pattern for `Temp` vs `Board Temp` label variations; added sed to rename `Temp` to `Board Temp` in output
