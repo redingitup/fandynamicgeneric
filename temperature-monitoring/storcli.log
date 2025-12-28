@@ -1,0 +1,312 @@
+------------Debug log started ini=0 level=4-----
+Mon Dec 29 02:41:42.205 2025 : CtMain::main processing for command=/ c 0 show temperature 
+Mon Dec 29 02:41:42.206 2025 : Entering LinuxControllerExplorer::explore 
+Mon Dec 29 02:41:42.206 2025 : Entering LinuxControllerExplorer::getCtrlCount
+Mon Dec 29 02:41:42.206 2025 : LinuxControllerExplorer::getCtrlCount _hDvr=-1 _hDvrSwr =-1
+Mon Dec 29 02:41:42.206 2025 : LinuxControllerExplorer::explore ctrlCount=1
+Mon Dec 29 02:41:42.206 2025 : returning LinuxControllerExplorer::explore ctrlIdListPtr
+Mon Dec 29 02:41:42.206 2025 : SlItControllerExplorer::explore - Entering
+Mon Dec 29 02:41:42.206 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.319 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.319 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.319 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.319 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.321 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.321 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.322 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.322 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.323 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.323 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.325 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.325 2025 : SlItControllerExplorer::explore - Getting the StoreLIB instance for SAS3.5 IT controller
+Mon Dec 29 02:41:42.325 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.359 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.359 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT
+Mon Dec 29 02:41:42.359 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.359 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.359 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT - retCode:0x0
+Mon Dec 29 02:41:42.359 2025 : SlItControllerExplorer::explore - Controller count:0
+Mon Dec 29 02:41:42.359 2025 : LinuxMfiDataProvider::fireIoctl DCMD=1010000 mbox.w[0]=1 mbox.w[1]=0 mbox.w[2]=0
+Mon Dec 29 02:41:42.359 2025 : LinuxMfiDataProvider::fireIoctl send_ioctl retcode=-1 cmdStatus=255
+Mon Dec 29 02:41:42.359 2025 : LinuxMfiDataProvider::fireIoctl returning with =-1 errno=9
+Mon Dec 29 02:41:42.359 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.360 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.360 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.362 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.366 2025 : Entering MWCliRootCp::process ver=007.2705.0000.0000 August 24, 2023 copyright=2023
+Mon Dec 29 02:41:42.366 2025 : initializing the RaidManager Instance 
+Mon Dec 29 02:41:42.366 2025 : Entering ITSwCtPrCp::process
+Mon Dec 29 02:41:42.366 2025 : Entering ITUtils::getSlCtrlInfo
+Mon Dec 29 02:41:42.366 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.367 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.367 2025 : Exiting ITUtils::getSlCtrlInfo
+Mon Dec 29 02:41:42.367 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:41:42.367 2025 : Exiting ITSwCtPrCp::process
+Mon Dec 29 02:41:42.367 2025 : MWCliRootCp::process processed for subtokenID=12 errorCode=0
+Mon Dec 29 02:41:42.368 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:41:42.368 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.368 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.368 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:41:42.380 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:41:42.380 2025 : CtMain::main command completed with retcode=0
+
+------------Debug log started ini=0 level=4-----
+Mon Dec 29 02:43:05.664 2025 : CtMain::main processing for command=/ c 0 show temperature 
+Mon Dec 29 02:43:05.664 2025 : Entering LinuxControllerExplorer::explore 
+Mon Dec 29 02:43:05.664 2025 : Entering LinuxControllerExplorer::getCtrlCount
+Mon Dec 29 02:43:05.665 2025 : LinuxControllerExplorer::getCtrlCount _hDvr=-1 _hDvrSwr =-1
+Mon Dec 29 02:43:05.665 2025 : LinuxControllerExplorer::explore ctrlCount=1
+Mon Dec 29 02:43:05.665 2025 : returning LinuxControllerExplorer::explore ctrlIdListPtr
+Mon Dec 29 02:43:05.665 2025 : SlItControllerExplorer::explore - Entering
+Mon Dec 29 02:43:05.665 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.780 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.780 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.780 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.780 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.782 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.782 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.783 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.784 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.784 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.785 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.786 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.786 2025 : SlItControllerExplorer::explore - Getting the StoreLIB instance for SAS3.5 IT controller
+Mon Dec 29 02:43:05.786 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.819 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.819 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT
+Mon Dec 29 02:43:05.819 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.819 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.819 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT - retCode:0x0
+Mon Dec 29 02:43:05.819 2025 : SlItControllerExplorer::explore - Controller count:0
+Mon Dec 29 02:43:05.819 2025 : LinuxMfiDataProvider::fireIoctl DCMD=1010000 mbox.w[0]=1 mbox.w[1]=0 mbox.w[2]=0
+Mon Dec 29 02:43:05.819 2025 : LinuxMfiDataProvider::fireIoctl send_ioctl retcode=-1 cmdStatus=255
+Mon Dec 29 02:43:05.819 2025 : LinuxMfiDataProvider::fireIoctl returning with =-1 errno=9
+Mon Dec 29 02:43:05.819 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.821 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.821 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.822 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.826 2025 : Entering MWCliRootCp::process ver=007.2705.0000.0000 August 24, 2023 copyright=2023
+Mon Dec 29 02:43:05.826 2025 : initializing the RaidManager Instance 
+Mon Dec 29 02:43:05.826 2025 : Entering ITSwCtPrCp::process
+Mon Dec 29 02:43:05.826 2025 : Entering ITUtils::getSlCtrlInfo
+Mon Dec 29 02:43:05.826 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.828 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.828 2025 : Exiting ITUtils::getSlCtrlInfo
+Mon Dec 29 02:43:05.828 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:43:05.828 2025 : Exiting ITSwCtPrCp::process
+Mon Dec 29 02:43:05.828 2025 : MWCliRootCp::process processed for subtokenID=12 errorCode=0
+Mon Dec 29 02:43:05.828 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:43:05.828 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.828 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.828 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:43:05.841 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:43:05.841 2025 : CtMain::main command completed with retcode=0
+
+------------Debug log started ini=0 level=4-----
+Mon Dec 29 02:49:45.574 2025 : CtMain::main processing for command=/ c 0 show temperature 
+Mon Dec 29 02:49:45.575 2025 : Entering LinuxControllerExplorer::explore 
+Mon Dec 29 02:49:45.575 2025 : Entering LinuxControllerExplorer::getCtrlCount
+Mon Dec 29 02:49:45.575 2025 : LinuxControllerExplorer::getCtrlCount _hDvr=-1 _hDvrSwr =-1
+Mon Dec 29 02:49:45.575 2025 : LinuxControllerExplorer::explore ctrlCount=1
+Mon Dec 29 02:49:45.575 2025 : returning LinuxControllerExplorer::explore ctrlIdListPtr
+Mon Dec 29 02:49:45.575 2025 : SlItControllerExplorer::explore - Entering
+Mon Dec 29 02:49:45.575 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.690 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.690 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.690 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.690 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.692 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.692 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.694 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.694 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.695 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.695 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.696 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.696 2025 : SlItControllerExplorer::explore - Getting the StoreLIB instance for SAS3.5 IT controller
+Mon Dec 29 02:49:45.696 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.731 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.731 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT
+Mon Dec 29 02:49:45.731 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.731 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.731 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT - retCode:0x0
+Mon Dec 29 02:49:45.731 2025 : SlItControllerExplorer::explore - Controller count:0
+Mon Dec 29 02:49:45.731 2025 : LinuxMfiDataProvider::fireIoctl DCMD=1010000 mbox.w[0]=1 mbox.w[1]=0 mbox.w[2]=0
+Mon Dec 29 02:49:45.731 2025 : LinuxMfiDataProvider::fireIoctl send_ioctl retcode=-1 cmdStatus=255
+Mon Dec 29 02:49:45.731 2025 : LinuxMfiDataProvider::fireIoctl returning with =-1 errno=9
+Mon Dec 29 02:49:45.731 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.732 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.733 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.734 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.738 2025 : Entering MWCliRootCp::process ver=007.2705.0000.0000 August 24, 2023 copyright=2023
+Mon Dec 29 02:49:45.738 2025 : initializing the RaidManager Instance 
+Mon Dec 29 02:49:45.738 2025 : Entering ITSwCtPrCp::process
+Mon Dec 29 02:49:45.738 2025 : Entering ITUtils::getSlCtrlInfo
+Mon Dec 29 02:49:45.738 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.740 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.740 2025 : Exiting ITUtils::getSlCtrlInfo
+Mon Dec 29 02:49:45.740 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:49:45.740 2025 : Exiting ITSwCtPrCp::process
+Mon Dec 29 02:49:45.740 2025 : MWCliRootCp::process processed for subtokenID=12 errorCode=0
+Mon Dec 29 02:49:45.740 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:49:45.740 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.740 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.740 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:49:45.753 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:49:45.753 2025 : CtMain::main command completed with retcode=0
+
+------------Debug log started ini=0 level=4-----
+Mon Dec 29 02:50:30.912 2025 : CtMain::main processing for command=/ c 0 show temperature 
+Mon Dec 29 02:50:30.913 2025 : Entering LinuxControllerExplorer::explore 
+Mon Dec 29 02:50:30.913 2025 : Entering LinuxControllerExplorer::getCtrlCount
+Mon Dec 29 02:50:30.913 2025 : LinuxControllerExplorer::getCtrlCount _hDvr=-1 _hDvrSwr =-1
+Mon Dec 29 02:50:30.913 2025 : LinuxControllerExplorer::explore ctrlCount=1
+Mon Dec 29 02:50:30.913 2025 : returning LinuxControllerExplorer::explore ctrlIdListPtr
+Mon Dec 29 02:50:30.913 2025 : SlItControllerExplorer::explore - Entering
+Mon Dec 29 02:50:30.913 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.026 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.026 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.026 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.026 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.027 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.027 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.029 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.029 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.030 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.030 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.032 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.032 2025 : SlItControllerExplorer::explore - Getting the StoreLIB instance for SAS3.5 IT controller
+Mon Dec 29 02:50:31.032 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.067 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.067 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT
+Mon Dec 29 02:50:31.067 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.067 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.067 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT - retCode:0x0
+Mon Dec 29 02:50:31.067 2025 : SlItControllerExplorer::explore - Controller count:0
+Mon Dec 29 02:50:31.067 2025 : LinuxMfiDataProvider::fireIoctl DCMD=1010000 mbox.w[0]=1 mbox.w[1]=0 mbox.w[2]=0
+Mon Dec 29 02:50:31.067 2025 : LinuxMfiDataProvider::fireIoctl send_ioctl retcode=-1 cmdStatus=255
+Mon Dec 29 02:50:31.067 2025 : LinuxMfiDataProvider::fireIoctl returning with =-1 errno=9
+Mon Dec 29 02:50:31.067 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.068 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.068 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.070 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.074 2025 : Entering MWCliRootCp::process ver=007.2705.0000.0000 August 24, 2023 copyright=2023
+Mon Dec 29 02:50:31.074 2025 : initializing the RaidManager Instance 
+Mon Dec 29 02:50:31.075 2025 : Entering ITSwCtPrCp::process
+Mon Dec 29 02:50:31.075 2025 : Entering ITUtils::getSlCtrlInfo
+Mon Dec 29 02:50:31.075 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.076 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.076 2025 : Exiting ITUtils::getSlCtrlInfo
+Mon Dec 29 02:50:31.076 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:50:31.076 2025 : Exiting ITSwCtPrCp::process
+Mon Dec 29 02:50:31.076 2025 : MWCliRootCp::process processed for subtokenID=12 errorCode=0
+Mon Dec 29 02:50:31.076 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:50:31.076 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.076 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.076 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:50:31.089 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:50:31.089 2025 : CtMain::main command completed with retcode=0
+
+------------Debug log started ini=0 level=4-----
+Mon Dec 29 02:51:07.381 2025 : CtMain::main processing for command=/ c 0 show temperature 
+Mon Dec 29 02:51:07.382 2025 : Entering LinuxControllerExplorer::explore 
+Mon Dec 29 02:51:07.382 2025 : Entering LinuxControllerExplorer::getCtrlCount
+Mon Dec 29 02:51:07.382 2025 : LinuxControllerExplorer::getCtrlCount _hDvr=-1 _hDvrSwr =-1
+Mon Dec 29 02:51:07.382 2025 : LinuxControllerExplorer::explore ctrlCount=1
+Mon Dec 29 02:51:07.382 2025 : returning LinuxControllerExplorer::explore ctrlIdListPtr
+Mon Dec 29 02:51:07.382 2025 : SlItControllerExplorer::explore - Entering
+Mon Dec 29 02:51:07.382 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.497 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.497 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.497 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.497 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.499 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.499 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.501 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.501 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.502 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.502 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.503 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.503 2025 : SlItControllerExplorer::explore - Getting the StoreLIB instance for SAS3.5 IT controller
+Mon Dec 29 02:51:07.503 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.537 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.537 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT
+Mon Dec 29 02:51:07.537 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.537 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.537 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT - retCode:0x0
+Mon Dec 29 02:51:07.537 2025 : SlItControllerExplorer::explore - Controller count:0
+Mon Dec 29 02:51:07.537 2025 : LinuxMfiDataProvider::fireIoctl DCMD=1010000 mbox.w[0]=1 mbox.w[1]=0 mbox.w[2]=0
+Mon Dec 29 02:51:07.537 2025 : LinuxMfiDataProvider::fireIoctl send_ioctl retcode=-1 cmdStatus=255
+Mon Dec 29 02:51:07.537 2025 : LinuxMfiDataProvider::fireIoctl returning with =-1 errno=9
+Mon Dec 29 02:51:07.537 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.538 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.539 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.540 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.544 2025 : Entering MWCliRootCp::process ver=007.2705.0000.0000 August 24, 2023 copyright=2023
+Mon Dec 29 02:51:07.544 2025 : initializing the RaidManager Instance 
+Mon Dec 29 02:51:07.544 2025 : Entering ITSwCtPrCp::process
+Mon Dec 29 02:51:07.544 2025 : Entering ITUtils::getSlCtrlInfo
+Mon Dec 29 02:51:07.544 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.545 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.545 2025 : Exiting ITUtils::getSlCtrlInfo
+Mon Dec 29 02:51:07.546 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:51:07.546 2025 : Exiting ITSwCtPrCp::process
+Mon Dec 29 02:51:07.546 2025 : MWCliRootCp::process processed for subtokenID=12 errorCode=0
+Mon Dec 29 02:51:07.546 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:51:07.546 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.546 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.546 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:51:07.558 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:51:07.558 2025 : CtMain::main command completed with retcode=0
+
+------------Debug log started ini=0 level=4-----
+Mon Dec 29 02:59:07.021 2025 : CtMain::main processing for command=/ c 0 show temperature 
+Mon Dec 29 02:59:07.022 2025 : Entering LinuxControllerExplorer::explore 
+Mon Dec 29 02:59:07.022 2025 : Entering LinuxControllerExplorer::getCtrlCount
+Mon Dec 29 02:59:07.022 2025 : LinuxControllerExplorer::getCtrlCount _hDvr=-1 _hDvrSwr =-1
+Mon Dec 29 02:59:07.022 2025 : LinuxControllerExplorer::explore ctrlCount=1
+Mon Dec 29 02:59:07.022 2025 : returning LinuxControllerExplorer::explore ctrlIdListPtr
+Mon Dec 29 02:59:07.022 2025 : SlItControllerExplorer::explore - Entering
+Mon Dec 29 02:59:07.022 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.298 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.298 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.298 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.298 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.299 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.299 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.301 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.301 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.302 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.302 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.304 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.304 2025 : SlItControllerExplorer::explore - Getting the StoreLIB instance for SAS3.5 IT controller
+Mon Dec 29 02:59:07.304 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.339 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.339 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT
+Mon Dec 29 02:59:07.339 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.339 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.339 2025 : SlItControllerExplorer::explore - Issuing SL_GET_CTRL_LIST to SLIT - retCode:0x0
+Mon Dec 29 02:59:07.339 2025 : SlItControllerExplorer::explore - Controller count:0
+Mon Dec 29 02:59:07.339 2025 : LinuxMfiDataProvider::fireIoctl DCMD=1010000 mbox.w[0]=1 mbox.w[1]=0 mbox.w[2]=0
+Mon Dec 29 02:59:07.339 2025 : LinuxMfiDataProvider::fireIoctl send_ioctl retcode=-1 cmdStatus=255
+Mon Dec 29 02:59:07.339 2025 : LinuxMfiDataProvider::fireIoctl returning with =-1 errno=9
+Mon Dec 29 02:59:07.339 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.340 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.340 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.342 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.346 2025 : Entering MWCliRootCp::process ver=007.2705.0000.0000 August 24, 2023 copyright=2023
+Mon Dec 29 02:59:07.346 2025 : initializing the RaidManager Instance 
+Mon Dec 29 02:59:07.346 2025 : Entering ITSwCtPrCp::process
+Mon Dec 29 02:59:07.346 2025 : Entering ITUtils::getSlCtrlInfo
+Mon Dec 29 02:59:07.346 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.347 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.347 2025 : Exiting ITUtils::getSlCtrlInfo
+Mon Dec 29 02:59:07.347 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:59:07.348 2025 : Exiting ITSwCtPrCp::process
+Mon Dec 29 02:59:07.348 2025 : MWCliRootCp::process processed for subtokenID=12 errorCode=0
+Mon Dec 29 02:59:07.348 2025 : Entering MWCliRootCp::handleOuput retCode=0, DriveFull=0
+Mon Dec 29 02:59:07.348 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.348 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.348 2025 : StorelibItDp::processLibCommand SL request sent
+Mon Dec 29 02:59:07.360 2025 : StorelibItDp::processLibCommand SL responded with retcode=0
+Mon Dec 29 02:59:07.360 2025 : CtMain::main command completed with retcode=0
+
