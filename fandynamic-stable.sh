@@ -37,7 +37,7 @@ TEMP_HIGH=${TEMP_HIGH:-55}
 TEMP_FAILSAFE=${TEMP_FAILSAFE:-60}
 SENSOR_ID=${SENSOR_ID:-0Eh}
 RESTART_ON_AUTO=${RESTART_ON_AUTO:-true}
-IPMITOOL_TIMEOUT=${IPMITOOL_TIMEOUT:-10}  # 10 second timeout for ipmitool
+IPMITOOL_TIMEOUT=${IPMITOOL_TIMEOUT:-10}
 
 # Logging function
 log() {
@@ -83,12 +83,16 @@ while true; do
             log "Restarting fan control daemon..."
             exit 0  # Exit cleanly - systemd will restart it
         fi
+
     elif [ "$BOARD_TEMP" -le "$TEMP_LOW" ]; then
         TARGET_PWM="0x0A"  # 10%
+
     elif [ "$BOARD_TEMP" -le "$TEMP_MID" ]; then
         TARGET_PWM="0x1E"  # 30%
+
     elif [ "$BOARD_TEMP" -le "$TEMP_HIGH" ]; then
         TARGET_PWM="0x32"  # 50%
+
     else
         TARGET_PWM="0x64"  # 100%
     fi
